@@ -391,7 +391,7 @@ let oe_prepare_input_buffer (os:out_channel) (fd:Ast.func_decl) (alloc_func:stri
 
 let oe_process_output_buffer (os:out_channel) (fd:Ast.func_decl) =
   (* Verify that the ecall succeeded *)
-  fprintf os "    /* Set up output arg struct pointer*/\n";
+  fprintf os "    /* Set up output arg struct pointer */\n";
   fprintf os "    *(uint8_t**)&_pargs_out = _output_buffer; \n";
   fprintf os "    OE_ADD_SIZE(_output_buffer_offset, sizeof(*_pargs_out));\n\n";
   fprintf os "    /* Check if the call succeeded */\n";
@@ -698,6 +698,8 @@ let oe_gen_ocall_enclave_wrapper (os:out_channel) (uf:Ast.untrusted_func) =
   fprintf os "    /* Fill marshalling struct */\n";
   fprintf os "    memset(&_args, 0, sizeof(_args));\n";
   gen_fill_marshal_struct os fd "_args";
+  (* TODO: Before we allocate the ocall buffer, we need to check if
+     we're aborting. *)
   oe_prepare_input_buffer os fd "oe_allocate_ocall_buffer";
   fprintf os "    /* Call host function */\n";
   fprintf os "    if((_result = oe_call_host_function(\n";
